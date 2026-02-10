@@ -1,32 +1,32 @@
 {% comment %}
   Cart discount widget block
-  Milestone A: simple placeholder content. This will later
-  be wired up to metafield-based configuration in Milestone C.
+  Milestone C: reads the app-owned shop metafield
+  `shop.metafields.volume_discount.rules` and renders a
+  message that matches the configured rule.
 {% endcomment %}
 
 {% schema %}
 {
   "name": "Cart discount widget",
   "target": "cart",
-  "settings": [
-    {
-      "type": "text",
-      "id": "heading",
-      "label": "Heading",
-      "default": "Buy 2 and save on your order"
-    },
-    {
-      "type": "text",
-      "id": "subheading",
-      "label": "Subheading",
-      "default": "Configure exact products and discount % inside the app."
-    }
-  ]
+  "settings": []
 }
 {% endschema %}
 
-<div class="pwdiscount-cart-widget">
-  <h3>{{ block.settings.heading }}</h3>
-  <p>{{ block.settings.subheading }}</p>
-</div>
+{% assign vd_rules_metafield = shop.metafields.volume_discount.rules %}
+{% if vd_rules_metafield and vd_rules_metafield.value != blank %}
+  {% assign vd_rules = vd_rules_metafield.value | parse_json %}
+  {% assign vd_min_qty = vd_rules.minQty | default: 2 %}
+  {% assign vd_percent_off = vd_rules.percentOff | default: 0 %}
+
+  <div class="pwdiscount-cart-widget">
+    <h3>Buy {{ vd_min_qty }} and get {{ vd_percent_off }}% off</h3>
+    <p>Discount applies automatically to eligible products in your cart.</p>
+  </div>
+{% else %}
+  <div class="pwdiscount-cart-widget">
+    <h3>Volume discount</h3>
+    <p>Add more items to see if a volume discount applies.</p>
+  </div>
+{% endif %}
 
