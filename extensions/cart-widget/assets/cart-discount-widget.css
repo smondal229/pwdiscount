@@ -1,0 +1,19 @@
+.pwdiscount-cart-widget {
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  background: #f3f4ff;
+  color: #111827;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+}
+
+.pwdiscount-cart-widget h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.pwdiscount-cart-widget p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+

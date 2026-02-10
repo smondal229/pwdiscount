@@ -1,0 +1,32 @@
+{% comment %}
+  Cart discount widget block
+  Milestone A: simple placeholder content. This will later
+  be wired up to metafield-based configuration in Milestone C.
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "Cart discount widget",
+  "target": "cart",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Buy 2 and save on your order"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Configure exact products and discount % inside the app."
+    }
+  ]
+}
+{% endschema %}
+
+<div class="pwdiscount-cart-widget">
+  <h3>{{ block.settings.heading }}</h3>
+  <p>{{ block.settings.subheading }}</p>
+</div>
+
