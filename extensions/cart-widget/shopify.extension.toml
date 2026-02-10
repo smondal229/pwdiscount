@@ -1,6 +1,9 @@
 api_version = "2026-01"
 
 [[extensions]]
+
+uid = "b56ef0bb-4f3e-ffce-77ef-3bf8fd7d1cb54379560b"
+
 type = "theme"
 name = "Cart discount widget"
 handle = "cart-discount-widget"

@@ -1,90 +1,61 @@
 import {
   DiscountClass,
-  OrderDiscountSelectionStrategy,
   ProductDiscountSelectionStrategy,
   CartInput,
   CartLinesDiscountsGenerateRunResult,
-} from '../generated/api';
+} from "../generated/api";
 
+const DISCOUNT_PERCENT = 10;
+const MIN_QUANTITY_FOR_DISCOUNT = 2;
 
 export function cartLinesDiscountsGenerateRun(
   input: CartInput,
 ): CartLinesDiscountsGenerateRunResult {
   if (!input.cart.lines.length) {
-    return {operations: []};
+    return { operations: [] };
   }
 
-  const hasOrderDiscountClass = input.discount.discountClasses.includes(
-    DiscountClass.Order,
-  );
   const hasProductDiscountClass = input.discount.discountClasses.includes(
     DiscountClass.Product,
   );
 
-  if (!hasOrderDiscountClass && !hasProductDiscountClass) {
-    return {operations: []};
+  if (!hasProductDiscountClass) {
+    return { operations: [] };
   }
 
-  const maxCartLine = input.cart.lines.reduce((maxLine, line) => {
-    if (line.cost.subtotalAmount.amount > maxLine.cost.subtotalAmount.amount) {
-      return line;
-    }
-    return maxLine;
-  }, input.cart.lines[0]);
+  // Total quantity across all cart lines
+  const totalQuantity = input.cart.lines.reduce(
+    (sum, line) => sum + (line.quantity ?? 0),
+    0,
+  );
 
-  const operations = [];
-
-  if (hasOrderDiscountClass) {
-    operations.push({
-      orderDiscountsAdd: {
-        candidates: [
-          {
-            message: '10% OFF ORDER',
-            targets: [
-              {
-                orderSubtotal: {
-                  excludedCartLineIds: [],
-                },
-              },
-            ],
-            value: {
-              percentage: {
-                value: 10,
-              },
-            },
-          },
-        ],
-        selectionStrategy: OrderDiscountSelectionStrategy.First,
-      },
-    });
-  }
-
-  if (hasProductDiscountClass) {
-    operations.push({
-      productDiscountsAdd: {
-        candidates: [
-          {
-            message: '20% OFF PRODUCT',
-            targets: [
-              {
-                cartLine: {
-                  id: maxCartLine.id,
-                },
-              },
-            ],
-            value: {
-              percentage: {
-                value: 20,
-              },
-            },
-          },
-        ],
-        selectionStrategy: ProductDiscountSelectionStrategy.First,
-      },
-    });
+  // Core rule: Buy 2 (or more) items, get X% off
+  if (totalQuantity < MIN_QUANTITY_FOR_DISCOUNT) {
+    return { operations: [] };
   }
 
   return {
-    operations,
+    operations: [
+      {
+        productDiscountsAdd: {
+          candidates: [
+            {
+              message: `Buy ${MIN_QUANTITY_FOR_DISCOUNT}, get ${DISCOUNT_PERCENT}% off`,
+              targets: input.cart.lines.map((line) => ({
+                cartLine: {
+                  id: line.id,
+                },
+              })),
+              value: {
+                percentage: {
+                  value: DISCOUNT_PERCENT,
+                },
+              },
+            },
+          ],
+          selectionStrategy: ProductDiscountSelectionStrategy.First,
+        },
+      },
+    ],
   };
 }
