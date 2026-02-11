@@ -88,6 +88,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
             type: "json",
             value: JSON.stringify(metafieldPayload),
           },
+          {
+            ownerId: shopId,
+            namespace: "volume_discount",
+            key: "headline",
+            type: "single_line_text_field",
+            value: `Buy ${metafieldPayload.minQty} and get ${metafieldPayload.percentOff}% off`,
+          },
         ],
       },
     },

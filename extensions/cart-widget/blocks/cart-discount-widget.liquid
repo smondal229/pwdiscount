@@ -1,26 +1,22 @@
 {% comment %}
   Cart discount widget block
-  Milestone C: reads the app-owned shop metafield
-  `shop.metafields.volume_discount.rules` and renders a
-  message that matches the configured rule.
+  Milestone C: reads an app-owned shop metafield
+  `shop.metafields.volume_discount.headline` (a simple string)
+  that is derived from the JSON rules used by the Function.
 {% endcomment %}
 
 {% schema %}
 {
   "name": "Cart discount widget",
-  "target": "cart",
+  "target": "section",
   "settings": []
 }
 {% endschema %}
 
-{% assign vd_rules_metafield = shop.metafields.volume_discount.rules %}
-{% if vd_rules_metafield and vd_rules_metafield.value != blank %}
-  {% assign vd_rules = vd_rules_metafield.value | parse_json %}
-  {% assign vd_min_qty = vd_rules.minQty | default: 2 %}
-  {% assign vd_percent_off = vd_rules.percentOff | default: 0 %}
-
+{% assign vd_headline_metafield = shop.metafields.volume_discount.headline %}
+{% if vd_headline_metafield and vd_headline_metafield.value != blank %}
   <div class="pwdiscount-cart-widget">
-    <h3>Buy {{ vd_min_qty }} and get {{ vd_percent_off }}% off</h3>
+    <h3>{{ vd_headline_metafield.value }}</h3>
     <p>Discount applies automatically to eligible products in your cart.</p>
   </div>
 {% else %}
